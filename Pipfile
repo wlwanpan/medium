@@ -9,6 +9,7 @@ url = "https://pypi.org/simple"
 aiohttp = "*"
 grpcio-tools = "*"
 grpcio = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.7"
