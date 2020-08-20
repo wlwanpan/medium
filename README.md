@@ -1,1 +1,1 @@
-## How to run a python AIOHTTP & GRPC server asynchronously on AWS elastic beanstalk
+## Running an HTTP & GRPC python server concurrently on AWS elastic beanstalk
