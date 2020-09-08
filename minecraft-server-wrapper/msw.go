@@ -14,10 +14,10 @@ import (
 )
 
 // STEP 1: Exec
-func JavaExecCmd(serverPath string, iniHeapSize, maxHeapSize int) *exec.Cmd {
-	iniHeapFlag := fmt.Sprintf("-Xms%dM", iniHeapSize)
+func JavaExecCmd(serverPath string, initialHeapSize, maxHeapSize int) *exec.Cmd {
+	initialHeapFlag := fmt.Sprintf("-Xms%dM", initialHeapSize)
 	maxHeapFlag := fmt.Sprintf("-Xmx%dM", maxHeapSize)
-	return exec.Command("java", iniHeapFlag, maxHeapFlag, "-jar", serverPath, "nogui")
+	return exec.Command("java", initialHeapFlag, maxHeapFlag, "-jar", serverPath, "nogui")
 }
 
 // STEP 2: Console
