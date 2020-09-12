@@ -30,6 +30,12 @@ type Wrapper struct {
 	machine *fsm.FSM
 }
 
+func NewDefaultWrapper(server string, initial, max int) *Wrapper {
+	cmd := JavaExecCmd(server, initial, max)
+	console := NewConsole(cmd)
+	return NewWrapper(console, LogParserFunc)
+}
+
 func NewWrapper(c Console, p LogParser) *Wrapper {
 	return &Wrapper{
 		console: c,
@@ -58,7 +64,11 @@ func NewWrapper(c Console, p LogParser) *Wrapper {
 					Dst:  ServerOnline,
 				},
 			},
-			nil,
+			fsm.Callbacks{
+				"enter_state": func(ev *fsm.Event) {
+					log.Printf("State transitioned: %s -> %s", ev.Src, ev.Dst)
+				},
+			},
 		),
 	}
 }
@@ -66,7 +76,6 @@ func NewWrapper(c Console, p LogParser) *Wrapper {
 func (w *Wrapper) processLogEvents() {
 	for {
 		line, err := w.console.ReadLine()
-		log.Println(line, err)
 		if err == io.EOF {
 			w.updateState(StoppedEvent)
 			return
@@ -78,7 +87,6 @@ func (w *Wrapper) processLogEvents() {
 }
 
 func (w *Wrapper) parseLineToEvent(line string) Event {
-	log.Println(line)
 	return w.parser(line)
 }
 
@@ -100,4 +108,8 @@ func (w *Wrapper) Start() error {
 
 func (w *Wrapper) Stop() error {
 	return w.console.WriteCmd("stop")
+}
+
+func (w *Wrapper) Kill() error {
+	return w.console.Kill()
 }

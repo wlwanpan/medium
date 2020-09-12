@@ -24,19 +24,6 @@ func ParseToLogLine(line string) *LogLine {
 	}
 }
 
-func (ll *LogLine) Match(r *regexp.Regexp) bool {
-	return r.MatchString(ll.output)
-}
-
-func (ll *LogLine) Event() Event {
-	for e, reg := range eventToRegexp {
-		if ll.Match(reg) {
-			return e
-		}
-	}
-	return EmptyEvent
-}
-
 type LogParser func(string) Event
 
 var eventToRegexp = map[Event]*regexp.Regexp{
@@ -47,7 +34,16 @@ var eventToRegexp = map[Event]*regexp.Regexp{
 
 func LogParserFunc(line string) Event {
 	ll := ParseToLogLine(line)
-	ev := ll.Event()
-	log.Println(ll.output, ev)
-	return ev
+	log.Println(ll.output)
+
+	if ll.output == "" {
+		return EmptyEvent
+	}
+
+	for event, reg := range eventToRegexp {
+		if reg.MatchString(ll.output) {
+			return event
+		}
+	}
+	return EmptyEvent
 }
